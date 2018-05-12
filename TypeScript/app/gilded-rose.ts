@@ -17,52 +17,81 @@ export class GildedRose {
         this.items = items;
     }
 
+    updateQualityWithLimit(quality, limit) {
+        if (quality < limit) {
+            quality = quality + 1;
+        }
+
+        return quality;
+    }
+
+    isAgedBrie(name) {
+        return name == 'Aged Brie'
+    }
+
+    isBackStagePass(name){
+        return name == 'Backstage passes to a TAFKAL80ETC concert';
+    }
+
+    isSulfuras(name) {
+        return name == 'Sulfuras, Hand of Ragnaros';
+    }
+
     updateQuality() {
         for (let i = 0; i < this.items.length; i++) {
-            if (this.items[i].name != 'Aged Brie' && this.items[i].name != 'Backstage passes to a TAFKAL80ETC concert') {
-                if (this.items[i].quality > 0) {
-                    if (this.items[i].name != 'Sulfuras, Hand of Ragnaros') {
-                        this.items[i].quality = this.items[i].quality - 1
+            let name = this.items[i].name;
+            let quality = this.items[i].quality;
+            let sellIn = this.items[i].sellIn;
+
+            let isAgeBrie = this.isAgedBrie(name);
+            let isBackStagePass = this.isBackStagePass(name);
+            let isSulfuras = this.isSulfuras(name);
+
+            if (!isAgeBrie && !isBackStagePass) {
+                if (quality > 0) {
+                    if (!isSulfuras) {
+                        quality = quality - 1
                     }
                 }
             } else {
-                if (this.items[i].quality < 50) {
-                    this.items[i].quality = this.items[i].quality + 1
-                    if (this.items[i].name == 'Backstage passes to a TAFKAL80ETC concert') {
-                        if (this.items[i].sellIn < 11) {
-                            if (this.items[i].quality < 50) {
-                                this.items[i].quality = this.items[i].quality + 1
-                            }
+                if (quality < 50) {
+                    quality = quality + 1
+                    if (isBackStagePass) {
+                        if (sellIn < 11) {
+                            quality = this.updateQualityWithLimit(quality, 50);
                         }
-                        if (this.items[i].sellIn < 6) {
-                            if (this.items[i].quality < 50) {
-                                this.items[i].quality = this.items[i].quality + 1
-                            }
+                        if (sellIn < 6) {
+                           quality = this.updateQualityWithLimit(quality, 50);
                         }
                     }
                 }
             }
-            if (this.items[i].name != 'Sulfuras, Hand of Ragnaros') {
-                this.items[i].sellIn = this.items[i].sellIn - 1;
+
+            if (!isSulfuras) {
+                sellIn = sellIn - 1;
             }
-            if (this.items[i].sellIn < 0) {
-                if (this.items[i].name != 'Aged Brie') {
-                    if (this.items[i].name != 'Backstage passes to a TAFKAL80ETC concert') {
-                        if (this.items[i].quality > 0) {
-                            if (this.items[i].name != 'Sulfuras, Hand of Ragnaros') {
-                                this.items[i].quality = this.items[i].quality - 1
+
+            if (sellIn < 0) {
+                if (!isAgeBrie) {
+                    if (!isBackStagePass) {
+                        if (quality > 0) {
+                            if (!isSulfuras) {
+                                quality = quality - 1
                             }
                         }
                     } else {
-                        this.items[i].quality = this.items[i].quality - this.items[i].quality
+                        quality = quality - quality
                     }
                 } else {
-                    if (this.items[i].quality < 50) {
-                        this.items[i].quality = this.items[i].quality + 1
-                    }
+                    quality = this.updateQualityWithLimit(quality, 50);
                 }
             }
+
+            this.items[i].quality = quality;
+            this.items[i].sellIn = sellIn;
+            this.items[i].name = name;
         }
+
 
         return this.items;
     }
