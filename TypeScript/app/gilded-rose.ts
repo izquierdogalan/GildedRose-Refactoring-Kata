@@ -29,12 +29,20 @@ export class GildedRose {
         return name == 'Aged Brie'
     }
 
-    isBackStagePass(name){
+    isBackStagePass(name) {
         return name == 'Backstage passes to a TAFKAL80ETC concert';
     }
 
     isSulfuras(name) {
         return name == 'Sulfuras, Hand of Ragnaros';
+    }
+
+    decreaseQuality(quality, numberTodecrease) {
+        return quality - numberTodecrease;
+    }
+
+    decreaseSellIn(sellIn,numberTodecrease) {
+        return sellIn -numberTodecrease;
     }
 
     updateQuality() {
@@ -48,27 +56,25 @@ export class GildedRose {
             let isSulfuras = this.isSulfuras(name);
 
             if (!isAgeBrie && !isBackStagePass) {
-                if (quality > 0) {
-                    if (!isSulfuras) {
-                        quality = quality - 1
-                    }
+                if (quality > 0 && !isSulfuras) {
+                    quality = this.decreaseQuality(quality, 1)
                 }
             } else {
                 if (quality < 50) {
-                    quality = quality + 1
+                    quality = quality + 1;
                     if (isBackStagePass) {
                         if (sellIn < 11) {
                             quality = this.updateQualityWithLimit(quality, 50);
                         }
                         if (sellIn < 6) {
-                           quality = this.updateQualityWithLimit(quality, 50);
+                            quality = this.updateQualityWithLimit(quality, 50);
                         }
                     }
                 }
             }
 
             if (!isSulfuras) {
-                sellIn = sellIn - 1;
+                sellIn = this.decreaseSellIn(sellIn,1);
             }
 
             if (sellIn < 0) {
@@ -76,11 +82,11 @@ export class GildedRose {
                     if (!isBackStagePass) {
                         if (quality > 0) {
                             if (!isSulfuras) {
-                                quality = quality - 1
+                                quality = this.decreaseQuality(quality, 1)
                             }
                         }
                     } else {
-                        quality = quality - quality
+                        quality = 0;
                     }
                 } else {
                     quality = this.updateQualityWithLimit(quality, 50);
